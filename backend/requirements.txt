@@ -1,1 +1,4 @@
+fastapi
 ollama
+uvicorn
+pydantic
