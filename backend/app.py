@@ -117,12 +117,12 @@ async def generate_response(request: MessageRequest):
 
 @app.get("/api/sessions")
 async def get_sessions():
-    """Get all chat sessions"""
     try:
+        # Remove the await - get_sessions() is not an async function
         sessions = ai_handler.get_sessions()
-        return {"sessions": sessions}
+        return JSONResponse(content={"sessions": sessions})
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 
 @app.get("/api/sessions/{session_id}")
 async def get_session(session_id: str):
@@ -153,6 +153,23 @@ async def clear_session():
             "status": "success", 
             "session_id": ai_handler.current_session_id
         }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/sessions/create")
+async def create_session(request: dict):
+    """Create a new chat session"""
+    try:
+        session_id = request.get("session_id")
+        model_name = request.get("model_name")
+        
+        if not session_id or not model_name:
+            raise HTTPException(status_code=400, detail="Session ID and model name are required")
+        
+        # Add session to database
+        db_handler.add_chat_session(session_id, model_name)
+        
+        return {"status": "success", "session_id": session_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -1,0 +1,135 @@
+/* Reset some default styling */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Full screen container */
+.app_container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Header style for model dropdown */
+.header {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Main content layout */
+.main_content {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 50px); /* adjust based on header height */
+}
+
+/* Sidebar on left (20% width) */
+.sidebar {
+  width: 20%;
+  background-color: #fafafa;
+  border-right: 1px solid #ddd;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+/* Sidebar header styling */
+.sidebar_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.new_session_button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Chat area on right (80% width) */
+.chat_area {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+/* Chat window with messages */
+.chat_window_container {
+  flex: 1;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 10px;
+  overflow-y: auto;
+  background-color: #fff;
+}
+
+/* Styling individual chat messages */
+.chat_message {
+  margin-bottom: 10px;
+}
+
+.message_sender {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+/* Chat input styling */
+.chat_input_container {
+  display: flex;
+}
+
+.chat_input_field {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px 0 0 4px;
+}
+
+.chat_input_button {
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  border-left: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+
+/* Dropdown model styling */
+.dropdown_model_container {
+  display: inline-block;
+}
+
+.dropdown_model_select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Sidebar session list styling */
+.session_list {
+  list-style: none;
+  margin-top: 10px;
+}
+
+.session_item {
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.session_item:hover {
+  background-color: #eaeaea;
+}
+
+.session_item.active {
+  background-color: #e6f2ff;
+  font-weight: bold;
+}

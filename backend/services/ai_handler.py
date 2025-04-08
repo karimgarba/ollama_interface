@@ -25,7 +25,7 @@ class AIHandler:
             db_handler (DatabaseHandler): An instance of the DatabaseHandler class.
         """
         self.models = self.get_models()
-        self.selected_model = None
+        self.current_model = None
         self.chat_history = []
         self.current_session_id = str(uuid.uuid4())
 
@@ -56,7 +56,7 @@ class AIHandler:
             model_name (str): The name of the model to set.
         """
         if model_name in self.models:
-            self.selected_model = model_name
+            self.current_model = model_name
         else:
             raise ValueError(f"Model {model_name} is not available.")
         
@@ -67,8 +67,8 @@ class AIHandler:
         self.chat_history = []
 
         self.current_session_id = str(uuid.uuid4())
-        if self.selected_model:
-            self.db_handler.add_chat_session(self.current_session_id, self.selected_model)
+        if self.current_model:
+            self.db_handler.add_chat_session(self.current_session_id, self.current_model)
 
     def add_to_chat_history(self, role, content):
         """
@@ -83,8 +83,8 @@ class AIHandler:
         }
         self.chat_history.append(message)
 
-        if self.selected_model:
-            self.db_handler.add_chat_session(self.current_session_id, self.selected_model)
+        if self.current_model:
+            self.db_handler.add_chat_session(self.current_session_id, self.current_model)
             self.db_handler.add_chat_message(self.current_session_id, role, content)
 
 
@@ -109,7 +109,7 @@ class AIHandler:
             str: The generated response from the AI model.
         """
 
-        if not self.selected_model:
+        if not self.current_model:
             raise ValueError("No model selected. Please select a model before generating a response.")
         
         self.add_to_chat_history("user", prompt)
@@ -123,7 +123,7 @@ class AIHandler:
         
         try:
             response = ollama.chat(
-                model=self.selected_model,
+                model=self.current_model,
                 messages=messsages,
             )
             
@@ -170,7 +170,7 @@ def test_ai_handler():
     # Test model selection
     if models:
         ai_handler.set_model(models[0])
-        assert ai_handler.selected_model == models[0], "Model selection failed."
+        assert ai_handler.current_model == models[0], "Model selection failed."
 
     # Test chat history management
     ai_handler.clear_chat_history()
