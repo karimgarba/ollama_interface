@@ -28,6 +28,11 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+Create .env file in backend directory. And put contents
+```bash
+    DB_PATH = "data/assistant.db"
+```
+
 ### Frontend Setup
 ```bash
 cd frontend
