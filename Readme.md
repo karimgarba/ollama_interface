@@ -1,8 +1,8 @@
-# aiAssistant
+# Ollama Interface
 
 A full-stack chat application that allows you to interact with AI models hosted through Ollama. This project features a React frontend and FastAPI backend with SQLite database for chat history persistence.
 
-## features
+## Features
 
 - 🤖 Integration with Ollama AI models
 - 💬 MultiSession chat interface
@@ -11,7 +11,7 @@ A full-stack chat application that allows you to interact with AI models hosted 
 - 🔄 SessionManagement capabilities
 
 
-## installation
+## Installation
 
 ### prerequisites
 
@@ -19,22 +19,31 @@ A full-stack chat application that allows you to interact with AI models hosted 
 - Python (v3.8+)
 - Ollama installed and running
 
-### backendSetup
+### Backend Setup
 
 ```bash
 cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
+```
 
-### frontendSetup
+### Frontend Setup
+```bash
 cd frontend
 npm install
+```
 
-
+## Starting pplication
+```bash
 # In one terminal
 cd backend
 python3 app.py
 # In another terminal
 cd frontend
 npm run dev
+```
+
+## Key notes
+- Tested sucessfully with deepseek-r1 (shows it's thoughts)
+- Tested Phi-4 mini
