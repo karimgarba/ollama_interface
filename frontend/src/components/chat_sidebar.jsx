@@ -10,29 +10,29 @@ const ChatSidebar = ({ chat_sessions, on_select_session, on_create_new_session, 
     };
 
     return (
-        <div className="chat_sidebar_container">
-            <div className="sidebar_header">
+        <div className="chatSidebarContainer">
+            <div className="sidebarHeader">
                 <h3>Chat Sessions</h3>
                 <button 
                     onClick={on_create_new_session}
-                    className="new_session_button"
+                    className="newSessionButton"
                 >
                     New Chat
                 </button>
             </div>
-            <ul className="session_list">
+            <ul className="sessionList">
                 {chat_sessions.length > 0 ? (
                     chat_sessions.map((session) => (
                         <li 
                             key={`session-${session.session_id}-${session.created_at}`} 
                             onClick={() => on_select_session(session.session_id)}
-                            className={`session_item ${session.session_id === active_session_id ? 'active' : ''}`}
+                            className={`sessionItem ${session.session_id === active_session_id ? 'active' : ''}`}
                         >
                             {format_session_name(session)}
                         </li>
                     ))
                 ) : (
-                    <li className="session_item">No chat sessions found</li>
+                    <li className="sessionItem">No chat sessions found</li>
                 )}
             </ul>
         </div>

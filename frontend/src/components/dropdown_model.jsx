@@ -2,9 +2,9 @@ import React from "react";
 
 const DropdownModel = ({ model_list, selected_model, on_model_change }) => {
     return (
-        <div className="dropdown_model_container">
+        <div className="dropdownModelContainer">
             <select
-                className="dropdown_model_select"
+                className="dropdownModelSelect"
                 value={selected_model}
                 onChange={(e) => on_model_change(e.target.value)}
             >

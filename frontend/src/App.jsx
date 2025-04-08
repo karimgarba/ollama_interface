@@ -11,85 +11,85 @@ const api = axios.create({
 });
 
 const App = () => {
-  const [selected_model, set_selected_model] = useState('');
-  const [model_list, set_model_list] = useState([]);
-  const [chat_sessions, set_chat_sessions] = useState([]);
-  const [current_session_id, set_current_session_id] = useState(null);
-  const [chat_messages, set_chat_messages] = useState([]);
+  const [selectedModel, setSelectedModel] = useState('');
+  const [modelList, setModelList] = useState([]);
+  const [chatSessions, setChatSessions] = useState([]);
+  const [currentSessionId, setCurrentSessionId] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
 
   // Fetch available AI models on mount
   useEffect(() => {
-    const fetch_model_list = async () => {
+    const fetchModelList = async () => {
       try {
         const response = await api.get('/api/models');
         console.log('Models response:', response.data);
-        set_model_list(response.data.models || []);
+        setModelList(response.data.models || []);
       } catch (error) {
         console.error('error fetching models:', error);
       }
     };
-    fetch_model_list();
+    fetchModelList();
   }, []);
 
   // Fetch chat sessions on mount
   useEffect(() => {
-    fetch_chat_sessions();
+    fetchChatSessions();
   }, []);
 
   // Fetch chat sessions
-  const fetch_chat_sessions = async () => {
+  const fetchChatSessions = async () => {
     try {
       const response = await api.get('/api/sessions');
       
       // Filter out duplicate sessions based on session_id
-      const unique_sessions = [];
-      const session_ids = new Set();
+      const uniqueSessions = [];
+      const sessionIds = new Set();
       
       if (response.data && response.data.sessions) {
         response.data.sessions.forEach(session => {
-          if (!session_ids.has(session.session_id)) {
-            session_ids.add(session.session_id);
-            unique_sessions.push(session);
+          if (!sessionIds.has(session.session_id)) {
+            sessionIds.add(session.session_id);
+            uniqueSessions.push(session);
           }
         });
       }
       
-      set_chat_sessions(unique_sessions);
+      setChatSessions(uniqueSessions);
     } catch (error) {
       console.error('Error fetching sessions:', error.response?.data || error.message);
     }
   };
 
   // Function to load a chat session
-  const load_chat_session = async (session_id) => {
+  const loadChatSession = async (sessionId) => {
     try {
-      const response = await api.get(`/api/sessions/${session_id}`);
-      set_current_session_id(session_id);
-      set_chat_messages(response.data.messages || []);
+      const response = await api.get(`/api/sessions/${sessionId}`);
+      setCurrentSessionId(sessionId);
+      setChatMessages(response.data.messages || []);
     } catch (error) {
       console.error('error loading session:', error);
     }
   };
 
   // Create a new chat session
-  const create_new_session = async () => {
+  const createNewSession = async () => {
     // Clear current messages
-    set_chat_messages([]);
+    setChatMessages([]);
     
     // Generate a new session ID
-    const new_session_id = crypto.randomUUID();
-    set_current_session_id(new_session_id);
+    const newSessionId = crypto.randomUUID();
+    setCurrentSessionId(newSessionId);
     
     try {
       // Add new session to database if a model is selected
-      if (selected_model) {
+      if (selectedModel) {
         await api.post('/api/sessions/create', {
-          session_id: new_session_id,
-          model_name: selected_model
+          session_id: newSessionId,
+          model_name: selectedModel
         });
         
         // Refresh sessions list
-        fetch_chat_sessions();
+        fetchChatSessions();
       }
     } catch (error) {
       console.error('Error creating new session:', error);
@@ -97,69 +97,66 @@ const App = () => {
   };
 
   // Function to send a chat prompt
-  const send_chat_prompt = async (prompt_text) => {
+  const sendChatPrompt = async (promptText) => {
+    // Add user message to chat messages
+    setChatMessages(prevMessages => [
+      ...prevMessages, 
+      { sender: 'user', content: promptText }
+    ]);
+    
     try {
-      // Add user message to chat messages
-      const new_message = {
-        sender: 'user',
-        content: prompt_text
-      };
-      
-      set_chat_messages(prev_messages => [...prev_messages, new_message]);
-      
       const response = await api.post('/api/chat', {
-        prompt: prompt_text,
-        model_name: selected_model,
-        session_id: current_session_id
+        prompt: promptText,
+        model_name: selectedModel,
+        session_id: currentSessionId
       });
       
       // Add assistant response if available
       if (response.data && response.data.response) {
-        const assistant_message = {
-          sender: 'assistant',
-          content: response.data.response
-        };
-        set_chat_messages(prev_messages => [...prev_messages, assistant_message]);
+        setChatMessages(prevMessages => [
+          ...prevMessages, 
+          { sender: 'assistant', content: response.data.response }
+        ]);
       }
       
       // Refresh sessions list
-      fetch_chat_sessions();
+      fetchChatSessions();
     } catch (error) {
       console.error('Error sending prompt:', error.response?.data || error);
     }
   };
 
   // Function to handle model selection change
-  const handle_model_change = async (new_model) => {
-    set_selected_model(new_model);
+  const handleModelChange = async (newModel) => {
+    setSelectedModel(newModel);
     try {
-      await api.post('/api/models/select', { model_name: new_model });
+      await api.post('/api/models/select', { model_name: newModel });
     } catch (error) {
       console.error('error selecting model:', error);
     }
   };
 
   return (
-    <div className="app_container">
+    <div className="appContainer">
       <div className="header">
         <DropdownModel
-          model_list={model_list}
-          selected_model={selected_model}
-          on_model_change={handle_model_change}
+          model_list={modelList}
+          selected_model={selectedModel}
+          on_model_change={handleModelChange}
         />
       </div>
-      <div className="main_content">
+      <div className="mainContent">
         <div className="sidebar">
           <ChatSidebar 
-            chat_sessions={chat_sessions} 
-            on_select_session={load_chat_session}
-            on_create_new_session={create_new_session}
-            active_session_id={current_session_id}
+            chat_sessions={chatSessions} 
+            on_select_session={loadChatSession}
+            on_create_new_session={createNewSession}
+            active_session_id={currentSessionId}
           />
         </div>
-        <div className="chat_area">
-          <ChatWindow chat_messages={chat_messages} />
-          <ChatInput on_send_prompt={send_chat_prompt} />
+        <div className="chatArea">
+          <ChatWindow chatMessages={chatMessages} />
+          <ChatInput onSendPrompt={sendChatPrompt} />
         </div>
       </div>
     </div>

@@ -115,6 +115,22 @@ class AIHandler:
         self.add_to_chat_history("user", prompt)
         messsages = []
 
+        if "python" in prompt.lower() or "code" in prompt.lower():
+            # Add system guidance for code formatting if the prompt mentions code
+            code_formatting_guidance = """
+            When providing code examples, especially Python code, format them using markdown code blocks with 
+            language specification. For example:
+            ```python
+            def example_function():
+                return "Hello World"
+            ```
+            """
+            
+            if system_prompt:
+                system_prompt += "\n" + code_formatting_guidance
+            else:
+                system_prompt = code_formatting_guidance
+
         if system_prompt:
             messsages.append({"role": "system", "content": system_prompt})
 

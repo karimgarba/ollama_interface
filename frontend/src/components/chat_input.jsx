@@ -1,27 +1,30 @@
 import React, { useState } from 'react';
 
-const ChatInput = ({ on_send_prompt }) => {
-  const [prompt_text, set_prompt_text] = useState('');
+const ChatInput = ({ onSendPrompt }) => {
+  const [prompt, setPrompt] = useState('');
 
-  const handle_submit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (prompt_text.trim() === '') return;
-    on_send_prompt(prompt_text);
-    set_prompt_text('');
+    if (prompt.trim()) {
+      onSendPrompt(prompt);
+      setPrompt('');
+    }
   };
 
   return (
-    <form className="chat_input_container" onSubmit={handle_submit}>
-      <input
-        type="text"
-        value={prompt_text}
-        onChange={(e) => set_prompt_text(e.target.value)}
-        placeholder="enter your prompt..."
-        className="chat_input_field"
-      />
-      <button type="submit" className="chat_input_button">
-        send
-      </button>
+    <form onSubmit={handleSubmit} className="chatInputForm">
+      <div className="chatInputContainer">
+        <input
+          type="text"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Type your message..."
+          className="chatInputField"
+        />
+        <button type="submit" className="sendButton">
+          Send
+        </button>
+      </div>
     </form>
   );
 };
