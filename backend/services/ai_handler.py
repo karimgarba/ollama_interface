@@ -101,46 +101,69 @@ class AIHandler:
     def generate_response(self, prompt, system_prompt=None):
         """
         Generates a response from the AI model based on the provided prompt and chat history.
-
-        Args:
-            prompt (str): The user prompt.
-            system_prompt (str, optional): A system prompt to guide the AI's response.
-        Returns:
-            str: The generated response from the AI model.
         """
-
         if not self.current_model:
             raise ValueError("No model selected. Please select a model before generating a response.")
         
         self.add_to_chat_history("user", prompt)
-        messsages = []
+        messages = []
 
-        if "python" in prompt.lower() or "code" in prompt.lower():
-            # Add system guidance for code formatting if the prompt mentions code
-            code_formatting_guidance = """
-            When providing code examples, especially Python code, format them using markdown code blocks with 
-            language specification. For example:
-            ```python
-            def example_function():
-                return "Hello World"
-            ```
-            """
+        # Enhanced code formatting guidance - works better with all models
+        code_formatting_guidance = """
+        When providing code examples, properly format them using markdown code blocks with appropriate syntax highlighting.
+        
+        For Python code:
+        ```python
+        def example_function():
+            return "Hello World"
+        ```
+        
+        For JavaScript code:
+        ```javascript
+        function exampleFunction() {
+            return "Hello World";
+        }
+        ```
+        
+        For other languages, use the appropriate language identifier after the triple backticks.
+        Make sure to close all code blocks with triple backticks.
+        """
+        
+        # Add the code formatting guidance to all responses, not just when "python" or "code" is mentioned
+        if system_prompt:
+            system_prompt += "\n" + code_formatting_guidance
+        else:
+            system_prompt = code_formatting_guidance
             
+        # Add model-specific instructions
+        model_specific_instructions = {
+            "deepseek": """You are deepseek, an advanced AI assistant. Greet the user if greeted. Always provide detailed, helpful responses directly addressing the user's query. Don't hullicante and try to communicate how a human would to situations. Do not provide code formatting guidance unless the user requests it. The latest message is the priority task""",
+        }
+        
+        # Add model-specific instruction if available
+        if self.current_model.lower() in model_specific_instructions:
             if system_prompt:
-                system_prompt += "\n" + code_formatting_guidance
+                system_prompt = model_specific_instructions[self.current_model.lower()] + "\n" + system_prompt
             else:
-                system_prompt = code_formatting_guidance
+                system_prompt = model_specific_instructions[self.current_model.lower()]
 
         if system_prompt:
-            messsages.append({"role": "system", "content": system_prompt})
+            messages.append({"role": "system", "content": system_prompt})
 
         for message in self.chat_history:
-            messsages.append({"role": message["role"], "content": message["content"]})
+            messages.append({"role": message["role"], "content": message["content"]})
         
+        # Add model-specific handling and timeout protection
         try:
+            # Model-specific handling
+            if self.current_model.lower() == "deepseek":
+                return self.generate_deepseek_response(messages)
+            
+            # For all other models, use standard processing with timeout
             response = ollama.chat(
                 model=self.current_model,
-                messages=messsages,
+                messages=messages,
+                options={"num_predict": 4096}  # Limit response length
             )
             
             assistant_response = response["message"]["content"]
@@ -151,7 +174,9 @@ class AIHandler:
         except Exception as e:
             print(f"Error generating response: {e}")
             return "I'm sorry, but I couldn't generate a response at this time."
-        
+
+    
+
     def get_sessions(self):
         """
         Retrieves all chat sessions from the database.

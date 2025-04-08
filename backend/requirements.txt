@@ -2,3 +2,6 @@ fastapi
 ollama
 uvicorn
 pydantic
+python-dotenv
+threading
+time

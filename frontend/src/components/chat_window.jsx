@@ -5,8 +5,8 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 const ChatWindow = ({ chatMessages = [] }) => {
   // Function to parse content and identify code blocks
   const parseMessageContent = (content) => {
-    // Check if the content has code blocks with markdown syntax
-    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+    // Improved regex for code block detection
+    const codeBlockRegex = /```([\w-]*)\n?([\s\S]*?)```/g;
     const parts = [];
     let lastIndex = 0;
     let match;
@@ -26,10 +26,13 @@ const ChatWindow = ({ chatMessages = [] }) => {
         });
       }
       
+      // Get language or default to text if not specified
+      let language = match[1]?.trim() || 'text';
+      
       // Add the code block with language info
       parts.push({
         type: 'code',
-        language: match[1] || 'python', // Default to python if no language specified
+        language: language,
         content: match[2].trim()
       });
       
